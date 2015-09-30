@@ -5,7 +5,8 @@ import java.net.*;
 
 class FileClient {
 
-    public static void main(String args[]) {
+    public static void main(String args[]) 
+    {
         byte[] aByte = new byte[1];
         int bytesRead;
         String serverIP = "192.168.1.5";
@@ -14,25 +15,29 @@ class FileClient {
         Socket clientSocket = null;
         InputStream is = null;
 
-        try {
-            clientSocket = new Socket( serverIP , serverPort );
+        try 
+        {
+        	//nieuwe socket om te communiceren met server
+            clientSocket = new Socket( serverIP , serverPort );	
             is = clientSocket.getInputStream();
-        } catch (IOException ex) {
-            // Do exception handling
-        }
+        } 
+        catch (IOException ex) {System.out.println("I/O error");}
 
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
 
-        if (is != null) {
-
+        if (is != null) 
+        {
             FileOutputStream fos = null;
             BufferedOutputStream bos = null;
-            try {
+            
+            try 
+            {
                 fos = new FileOutputStream(fileOutput);
                 bos = new BufferedOutputStream(fos);
                 bytesRead = is.read(aByte, 0, aByte.length);
 
-                do {
+                do 
+                {
                         baos.write(aByte);
                         bytesRead = is.read(aByte);
                 } while (bytesRead != -1);
@@ -41,9 +46,8 @@ class FileClient {
                 bos.flush();
                 bos.close();
                 clientSocket.close();
-            } catch (IOException ex) {
-                // Do exception handling
-            }
+            } 
+            catch (IOException ex) {System.out.println("I/O error");}
         }
     }
 }

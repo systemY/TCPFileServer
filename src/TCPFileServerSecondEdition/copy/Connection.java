@@ -14,44 +14,46 @@ import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 
-class Connection extends Thread { 
+class Connection extends Thread 
+{ 
 
 	Socket connectionSocket; 
 	BufferedOutputStream outToClient;
-	public String fileToSend = "C:\\test1.txt";
+	public String fileToSend;
 	
-	public Connection (Socket connectionSocket, BufferedOutputStream outToClient) 
+	public Connection (Socket connectionSocket, BufferedOutputStream outToClient, String fileToSend) 
 	{ 
-	
-		connectionSocket = this.connectionSocket;
-       outToClient=this.outToClient;
-
-	  }
+		connectionSocket = this.connectionSocket;	//communcatie socket
+		outToClient=this.outToClient;				//BufferedOutputStream
+		fileToSend=this.fileToSend;					//file locatie
+	 }
 
 	public void run() 
 	  { 
-		  File myFile = new File( fileToSend );
-          byte[] mybytearray = new byte[(int) myFile.length()];
-
+			//plaats het te verzenden bestand in een byte array 
+		  File myFile = new File(fileToSend );
+          byte[] mybytearray = new byte[(int) myFile.length()];	//byte array aanmaken
           FileInputStream fis = null;
+          try 
+          {
+              fis = new FileInputStream(myFile);						//input stream
+              BufferedInputStream bis = new BufferedInputStream(fis);	//buffered input stream
+              bis.read(mybytearray, 0, mybytearray.length);				//byte array vullen via buffered input stream
+              bis.close();
+              fis.close();
+          } 
+          catch (FileNotFoundException ex) {System.out.println("Bestand bestaad niet");}
+          catch (SecurityException sx) {System.out.println("Geen toegang tot bestand");} 
+          catch (IOException e) {System.out.println("I/O error");}
 
-          try {
-              fis = new FileInputStream(myFile);
-          } catch (FileNotFoundException ex) {
-          	System.out.println("AJ2");
-          }
-          BufferedInputStream bis = new BufferedInputStream(fis);
-
-          try {
-              bis.read(mybytearray, 0, mybytearray.length);
+          try 
+          {
               outToClient.write(mybytearray, 0, mybytearray.length);
               outToClient.flush();
               outToClient.close();
               connectionSocket.close();
-              // File sent, exit the main method
               return;
-          } catch (IOException ex) {
-          	System.out.println("AJ3");
-          }
-}
+          } 
+          catch (IOException ex) {System.out.println("IOException");}
+	  }
 }
